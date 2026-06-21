@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile — AI Job Market Analytics{% endblock %}
+
+{% block content %}
+<div class="section-header" id="profile_header">
+    <div>
+        <h1>User Profile Settings</h1>
+        <p class="section-title-desc">Update your credentials and analytical preferences</p>
+    </div>
+</div>
+
+<div class="detail-layout" id="profile_layout">
+    <!-- Main Form Area -->
+    <div class="card" id="profile_form_card">
+        <h3 style="margin-bottom: 1.5rem; color: var(--primary-hover); display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-user-pen"></i> Edit Profile Information
+        </h3>
+
+        <form method="POST" action="{% url 'profile' %}" id="profile_form">
+            {% csrf_token %}
+            
+            <h4 style="margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; color: var(--text-primary);">
+                Personal Information
+            </h4>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="{{ u_form.first_name.id_for_label }}">First Name</label>
+                    {{ u_form.first_name }}
+                    {{ u_form.first_name.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ u_form.last_name.id_for_label }}">Last Name</label>
+                    {{ u_form.last_name }}
+                    {{ u_form.last_name.errors }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="{{ u_form.email.id_for_label }}">Email Address</label>
+                {{ u_form.email }}
+                {{ u_form.email.errors }}
+            </div>
+
+            <h4 style="margin-top: 2rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; color: var(--text-primary);">
+                Professional Preferences
+            </h4>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="{{ p_form.favorite_role.id_for_label }}">Favorite Job Role</label>
+                    {{ p_form.favorite_role }}
+                    {{ p_form.favorite_role.errors }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ p_form.preferred_work_mode.id_for_label }}">Preferred Work Mode</label>
+                    {{ p_form.preferred_work_mode }}
+                    {{ p_form.preferred_work_mode.errors }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="{{ p_form.bio.id_for_label }}">Professional Bio</label>
+                {{ p_form.bio }}
+                {{ p_form.bio.errors }}
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary" id="btn_save_profile">
+                    <i class="fa-solid fa-floppy-disk"></i> Save Preferences
+                </button>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary" id="btn_cancel_profile">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Info/Meta Card Sidebar -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div class="card" id="profile_meta_card" style="text-align: center;">
+            <div style="width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2.5rem; font-weight: 800; color: #fff; box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);">
+                {{ user.username|slice:":1"|upper }}
+            </div>
+            <h2>{{ user.get_full_name|default:user.username }}</h2>
+            <p style="color: var(--primary-hover); font-weight: 600; font-size: 0.9rem;">
+                {{ user.profile.favorite_role|default:"Tech Enthusiast" }}
+            </p>
+            <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.25rem;">
+                Member since {{ user.date_joined|date:"M d, Y" }}
+            </p>
+            
+            <div style="border-top: 1px solid var(--border-color); margin-top: 1.5rem; padding-top: 1.5rem; text-align: left; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.85rem;">
+                <div>
+                    <span style="color: var(--text-muted);">Email:</span>
+                    <span style="float: right; color: var(--text-primary);">{{ user.email|default:"Not specified" }}</span>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted);">Work Preference:</span>
+                    <span style="float: right;" class="badge badge-info">{{ user.profile.preferred_work_mode|default:"Any Mode" }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(14, 165, 233, 0.05)); border-color: rgba(14, 165, 233, 0.2);">
+            <h4 style="color: var(--primary-hover); margin-bottom: 0.75rem;">
+                <i class="fa-solid fa-circle-info"></i> Why set preferences?
+            </h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
+                Setting your preferred job role and work mode helps the dashboard prioritize analytics and highlight salary insights relevant to your interests.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

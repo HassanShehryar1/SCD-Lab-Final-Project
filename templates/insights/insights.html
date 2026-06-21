@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Market Insights — AI Job Market Analytics{% endblock %}
+
+{% block content %}
+<div class="section-header" id="insights_header">
+    <div>
+        <h1>AI Job Market Insights</h1>
+        <p class="section-title-desc">Dynamic trends and observations derived by running comparative aggregations on our job datasets</p>
+    </div>
+    <div>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary" id="btn_back_dashboard">
+            <i class="fa-solid fa-gauge"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<div style="max-width: 900px; margin: 0 auto;" id="insights_container">
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="color: var(--primary-hover); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+            <i class="fa-solid fa-lightbulb"></i> Auto-Generated Market Observations
+        </h2>
+        
+        <div class="insights-grid" id="insights_list">
+            {% for insight in insights %}
+                <div class="insight-card" id="insight_item_{{ forloop.counter }}">
+                    <div class="insight-card-content" style="font-size: 1rem; color: var(--text-secondary); line-height: 1.6;">
+                        {{ insight|safe }}
+                    </div>
+                </div>
+            {% empty %}
+                <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-magnifying-glass-chart" style="font-size: 3rem; display: block; margin-bottom: 1rem; color: var(--text-muted);"></i>
+                    No analytical insights could be generated. The database is empty.
+                    <div style="margin-top: 1.5rem;">
+                        <p style="font-size: 0.85rem; margin-bottom: 1rem;">Please run the import data command to populate the database:</p>
+                        <code style="background-color: var(--bg-main); border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: var(--border-radius-sm); color: var(--accent); font-family: monospace; font-size: 0.9rem;">
+                            python manage.py import_jobs --limit 5000
+                        </code>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Methodology notice card -->
+    <div class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(14, 165, 233, 0.04)); border-color: rgba(99, 102, 241, 0.2);">
+        <h4 style="color: var(--secondary-hover); margin-bottom: 0.5rem;">
+            <i class="fa-solid fa-square-poll-vertical"></i> Computation Methodology
+        </h4>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
+            These insights are computed on-the-fly directly from the active postings database. By comparing average salaries across variables, tracking year-over-year volume changes, and identifying roles with high career growth scores or employee satisfaction indices, the analytics engine automatically points out significant observations in real-time.
+        </p>
+    </div>
+</div>
+{% endblock %}

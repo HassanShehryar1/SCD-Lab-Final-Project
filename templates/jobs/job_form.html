@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} — AI Job Market Analytics{% endblock %}
+
+{% block content %}
+<div class="section-header" id="job_form_header">
+    <div>
+        <h1>{{ title }}</h1>
+        <p class="section-title-desc">Fill in the fields to publish or update position variables in the database</p>
+    </div>
+</div>
+
+<div class="card" id="job_form_card" style="max-width: 800px; margin: 0 auto;">
+    <form method="POST" id="job_posting_form">
+        {% csrf_token %}
+        
+        <h3 style="color: var(--primary-hover); margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+            <i class="fa-solid fa-briefcase"></i> Core Role Information
+        </h3>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="{{ form.job_role.id_for_label }}">Job Role / Title *</label>
+                {{ form.job_role }}
+                {{ form.job_role.errors }}
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="{{ form.ai_specialization.id_for_label }}">AI Specialization</label>
+                {{ form.ai_specialization }}
+                {{ form.ai_specialization.errors }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="{{ form.country.id_for_label }}">Country *</label>
+                {{ form.country }}
+                {{ form.country.errors }}
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="{{ form.industry.id_for_label }}">Industry</label>
+                {{ form.industry }}
+                {{ form.industry.errors }}
+            </div>
+        </div>
+
+        <h3 style="color: var(--success-hover); margin-top: 2rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+            <i class="fa-solid fa-money-bills"></i> Compensation & Logistics
+        </h3>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="{{ form.salary_usd.id_for_label }}">Annual Base Salary (USD) *</label>
+                {{ form.salary_usd }}
+                {{ form.salary_usd.errors }}
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="{{ form.bonus_usd.id_for_label }}">Annual Bonus (USD)</label>
+                {{ form.bonus_usd }}
+                {{ form.bonus_usd.errors }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="{{ form.work_mode.id_for_label }}">Work Mode *</label>
+                {{ form.work_mode }}
+                {{ form.work_mode.errors }}
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="{{ form.weekly_hours.id_for_label }}">Weekly Hours</label>
+                {{ form.weekly_hours }}
+                {{ form.weekly_hours.errors }}
+            </div>
+        </div>
+
+        <h3 style="color: var(--warning); margin-top: 2rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+            <i class="fa-solid fa-graduation-cap"></i> Experience & Demographics
+        </h3>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="{{ form.experience_level.id_for_label }}">Experience Category *</label>
+                {{ form.experience_level }}
+                {{ form.experience_level.errors }}
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="{{ form.experience_years.id_for_label }}">Experience in Years</label>
+                {{ form.experience_years }}
+                {{ form.experience_years.errors }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="{{ form.education_required.id_for_label }}">Education Required</label>
+                {{ form.education_required }}
+                {{ form.education_required.errors }}
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="{{ form.year.id_for_label }}">Data Year</label>
+                {{ form.year }}
+                {{ form.year.errors }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="{{ form.company_size.id_for_label }}">Company Size</label>
+                {{ form.company_size }}
+                {{ form.company_size.errors }}
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="{{ form.company_rating.id_for_label }}">Company Rating (0-5)</label>
+                {{ form.company_rating }}
+                {{ form.company_rating.errors }}
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="{{ form.job_openings.id_for_label }}">Vacancies Open</label>
+                {{ form.job_openings }}
+                {{ form.job_openings.errors }}
+            </div>
+        </div>
+
+        <h3 style="color: var(--accent); margin-top: 2rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+            <i class="fa-solid fa-chart-line"></i> Analytics & Scores (0-100)
+        </h3>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="{{ form.skill_demand_score.id_for_label }}">Skill Demand</label>
+                {{ form.skill_demand_score }}
+                {{ form.skill_demand_score.errors }}
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="{{ form.career_growth_score.id_for_label }}">Career Growth</label>
+                {{ form.career_growth_score }}
+                {{ form.career_growth_score.errors }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="{{ form.work_life_balance_score.id_for_label }}">Work Life Balance</label>
+                {{ form.work_life_balance_score }}
+                {{ form.work_life_balance_score.errors }}
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="{{ form.employee_satisfaction.id_for_label }}">Employee Satisfaction</label>
+                {{ form.employee_satisfaction }}
+                {{ form.employee_satisfaction.errors }}
+            </div>
+        </div>
+
+        <div style="margin-top: 2.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
+            {% if form.instance.pk %}
+                <a href="{% url 'job_detail' form.instance.pk %}" class="btn btn-secondary" id="btn_cancel_job_form">Cancel</a>
+            {% else %}
+                <a href="{% url 'job_list' %}" class="btn btn-secondary" id="btn_cancel_job_form">Cancel</a>
+            {% endif %}
+            <button type="submit" class="btn btn-primary" id="btn_submit_job_form">
+                <i class="fa-solid fa-circle-check"></i> Save Posting
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard — AI Job Market Analytics{% endblock %}
+
+{% block content %}
+<!-- Welcome & Section Header -->
+<div class="section-header" id="dashboard_header">
+    <div>
+        <h1>Market Analytics Dashboard</h1>
+        <p class="section-title-desc">Overview of global tech & AI job posting metrics, compensation, and distribution trends</p>
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+        <a href="{% url 'job_create' %}" class="btn btn-primary" id="btn_add_job">
+            <i class="fa-solid fa-plus"></i> Add Job Posting
+        </a>
+        <a href="{% url 'job_list' %}" class="btn btn-secondary" id="btn_search_jobs">
+            <i class="fa-solid fa-magnifying-glass"></i> Explore Jobs
+        </a>
+    </div>
+</div>
+
+<!-- Grid Statistics Cards -->
+<div class="grid-stats" id="dashboard_stats">
+    <!-- Stat 1 -->
+    <div class="card stat-card" id="card_total_jobs">
+        <div class="stat-header">
+            <span>TOTAL ANALYZED JOBS</span>
+            <i class="fa-solid fa-database stat-icon"></i>
+        </div>
+        <div class="stat-value">{{ stats.total_jobs|default:0|filesizeformat|cut:"bytes" }}</div>
+        <div class="stat-desc">Accumulated unique job postings</div>
+    </div>
+    
+    <!-- Stat 2 -->
+    <div class="card stat-card" id="card_avg_salary">
+        <div class="stat-header">
+            <span>AVERAGE SALARY (USD)</span>
+            <i class="fa-solid fa-money-bill-trend-up stat-icon" style="color: var(--success-hover);"></i>
+        </div>
+        <div class="stat-value">${{ stats.avg_salary|default:0|floatformat:0 }}</div>
+        <div class="stat-desc">Base salary index across all roles</div>
+    </div>
+
+    <!-- Stat 3 -->
+    <div class="card stat-card" id="card_max_salary">
+        <div class="stat-header">
+            <span>MAX SALARY CEILING</span>
+            <i class="fa-solid fa-crown stat-icon" style="color: var(--warning);"></i>
+        </div>
+        <div class="stat-value">${{ stats.max_salary|default:0|floatformat:0 }}</div>
+        <div class="stat-desc">Highest compensation recorded</div>
+    </div>
+
+    <!-- Stat 4 -->
+    <div class="card stat-card" id="card_satisfaction">
+        <div class="stat-header">
+            <span>EMPLOYEE SATISFACTION</span>
+            <i class="fa-solid fa-face-smile stat-icon" style="color: var(--accent);"></i>
+        </div>
+        <div class="stat-value">{{ stats.avg_satisfaction|default:0|floatformat:1 }}/100</div>
+        <div class="stat-desc">Average career satisfaction index</div>
+    </div>
+</div>
+
+<!-- Main Content Grid -->
+<div class="detail-layout" id="dashboard_layout" style="grid-template-columns: 2fr 1fr; margin-bottom: 2rem;">
+    <!-- Left Column: Charts Grid -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        
+        <!-- Row 1 Charts -->
+        <div class="grid-charts" style="margin-bottom: 0;">
+            <!-- Chart 1 -->
+            <div class="card chart-wrapper">
+                <h3 style="color: var(--primary-hover); display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fa-solid fa-chart-bar"></i> Avg Salary by Job Role
+                </h3>
+                <div class="chart-canvas-container">
+                    <canvas id="chart_salary_by_role"></canvas>
+                </div>
+            </div>
+            
+            <!-- Chart 2 -->
+            <div class="card chart-wrapper">
+                <h3 style="color: var(--accent); display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fa-solid fa-chart-pie"></i> Work Mode Distribution
+                </h3>
+                <div class="chart-canvas-container">
+                    <canvas id="chart_work_mode"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2 Charts -->
+        <div class="grid-charts" style="margin-bottom: 0;">
+            <!-- Chart 3 -->
+            <div class="card chart-wrapper">
+                <h3 style="color: var(--success-hover); display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fa-solid fa-chart-line"></i> Job Postings Over Time
+                </h3>
+                <div class="chart-canvas-container">
+                    <canvas id="chart_jobs_over_time"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 4 -->
+            <div class="card chart-wrapper">
+                <h3 style="color: var(--warning); display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fa-solid fa-chart-column"></i> Salary Range Distribution
+                </h3>
+                <div class="chart-canvas-container">
+                    <canvas id="chart_salary_dist"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 3 Scatter Chart -->
+        <div class="card">
+            <h3 style="color: var(--primary-hover); display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-chart-scatter"></i> Experience (Years) vs. Salary (USD)
+            </h3>
+            <div class="chart-canvas-container" style="height: 350px;">
+                <canvas id="chart_experience_salary"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Right Column: Rankings & Summaries -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        
+        <!-- Ranking Card 1 -->
+        <div class="card">
+            <h3 style="color: var(--primary-hover); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                <i class="fa-solid fa-industry"></i> Top Hiring Sectors
+            </h3>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Industry</th>
+                            <th style="text-align: right;">Postings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ind in top_industries %}
+                            <tr>
+                                <td style="color: var(--text-primary); font-weight: 500;">{{ ind.industry }}</td>
+                                <td style="text-align: right; font-weight: 600;">{{ ind.count }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="2">No industry data found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Ranking Card 2 -->
+        <div class="card">
+            <h3 style="color: var(--accent); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                <i class="fa-solid fa-globe"></i> Top Countries by Pay
+            </h3>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Country</th>
+                            <th>Jobs</th>
+                            <th style="text-align: right;">Avg Pay</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in top_countries %}
+                            <tr>
+                                <td style="color: var(--text-primary); font-weight: 500;">{{ c.country }}</td>
+                                <td>{{ c.count }}</td>
+                                <td style="text-align: right; color: var(--success-hover); font-weight: 600;">
+                                    ${{ c.avg_sal|floatformat:0 }}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3">No country data found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Theme options for Charts
+    const chartDefaults = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#94a3b8',
+                    font: { family: 'Inter', size: 11 }
+                }
+            }
+        },
+        scales: {
+            x: {
+                grid: { color: 'rgba(255,255,255,0.05)' },
+                ticks: { color: '#94a3b8', font: { family: 'Inter', size: 10 } }
+            },
+            y: {
+                grid: { color: 'rgba(255,255,255,0.05)' },
+                ticks: { color: '#94a3b8', font: { family: 'Inter', size: 10 } }
+            }
+        }
+    };
+
+    // Chart 1: Bar Chart — Salary by Role
+    const ctx1 = document.getElementById('chart_salary_by_role').getContext('2d');
+    new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: JSON.parse('{{ chart1_labels|safe }}'),
+            datasets: [{
+                label: 'Average Salary ($)',
+                data: JSON.parse('{{ chart1_data|safe }}'),
+                backgroundColor: 'rgba(14, 165, 233, 0.65)',
+                borderColor: '#0ea5e9',
+                borderWidth: 1.5,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            ...chartDefaults,
+            plugins: {
+                ...chartDefaults.plugins,
+                legend: { display: false }
+            }
+        }
+    });
+
+    // Chart 2: Pie Chart — Work Mode Distribution
+    const ctx2 = document.getElementById('chart_work_mode').getContext('2d');
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: JSON.parse('{{ chart2_labels|safe }}'),
+            datasets: [{
+                data: JSON.parse('{{ chart2_data|safe }}'),
+                backgroundColor: [
+                    'rgba(99, 102, 241, 0.7)',  // Indigo
+                    'rgba(14, 165, 233, 0.7)',  // Sky
+                    'rgba(217, 70, 239, 0.7)'   // Fuchsia
+                ],
+                borderColor: '#1e293b',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            ...chartDefaults,
+            scales: undefined, // Doughnut doesn't use grid scales
+            plugins: {
+                ...chartDefaults.plugins,
+                legend: {
+                    position: 'bottom',
+                    labels: { color: '#94a3b8', boxWidth: 15 }
+                }
+            }
+        }
+    });
+
+    // Chart 3: Line Chart — Jobs Over Time
+    const ctx3 = document.getElementById('chart_jobs_over_time').getContext('2d');
+    new Chart(ctx3, {
+        type: 'line',
+        data: {
+            labels: JSON.parse('{{ chart3_labels|safe }}'),
+            datasets: [{
+                label: 'Job Postings',
+                data: JSON.parse('{{ chart3_data|safe }}'),
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                fill: true,
+                tension: 0.35,
+                borderWidth: 3,
+                pointBackgroundColor: '#10b981'
+            }]
+        },
+        options: chartDefaults
+    });
+
+    // Chart 4: Salary Range Distribution
+    const ctx4 = document.getElementById('chart_salary_dist').getContext('2d');
+    new Chart(ctx4, {
+        type: 'bar',
+        data: {
+            labels: JSON.parse('{{ chart4_labels|safe }}'),
+            datasets: [{
+                label: 'Number of Jobs',
+                data: JSON.parse('{{ chart4_data|safe }}'),
+                backgroundColor: 'rgba(245, 158, 11, 0.65)',
+                borderColor: '#f59e0b',
+                borderWidth: 1.5,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            ...chartDefaults,
+            plugins: {
+                ...chartDefaults.plugins,
+                legend: { display: false }
+            }
+        }
+    });
+
+    // Chart 5: Scatter — Experience vs Salary
+    const ctx5 = document.getElementById('chart_experience_salary').getContext('2d');
+    new Chart(ctx5, {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: 'Job Postings',
+                data: JSON.parse('{{ chart5_data|safe }}'),
+                backgroundColor: 'rgba(217, 70, 239, 0.65)',
+                pointRadius: 4,
+                pointHoverRadius: 7
+            }]
+        },
+        options: {
+            ...chartDefaults,
+            scales: {
+                x: {
+                    ...chartDefaults.scales.x,
+                    title: { display: true, text: 'Experience Years', color: '#94a3b8' }
+                },
+                y: {
+                    ...chartDefaults.scales.y,
+                    title: { display: true, text: 'Salary (USD)', color: '#94a3b8' },
+                    ticks: {
+                        color: '#94a3b8',
+                        callback: function(value) {
+                            return '$' + value / 1000 + 'k';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

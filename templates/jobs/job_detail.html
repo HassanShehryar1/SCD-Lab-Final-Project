@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ job.job_role }} Detail — AI Job Market Analytics{% endblock %}
+
+{% block content %}
+<!-- Section Header -->
+<div class="section-header" id="job_detail_header">
+    <div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+            <a href="{% url 'job_list' %}" style="color: var(--text-muted); font-size: 1.1rem;" id="btn_back_to_listings">
+                <i class="fa-solid fa-arrow-left"></i> Back to listings
+            </a>
+        </div>
+        <h1 style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            {{ job.job_role }}
+            {% if job.ai_specialization %}
+                <span class="badge badge-info" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;">
+                    {{ job.ai_specialization }}
+                </span>
+            {% endif %}
+        </h1>
+        <p class="section-title-desc">
+            <i class="fa-solid fa-location-dot" style="margin-right: 0.25rem;"></i> {{ job.country }} &bull; 
+            <i class="fa-solid fa-industry" style="margin-left: 0.5rem; margin-right: 0.25rem;"></i> {{ job.industry|default:"General Tech" }} &bull;
+            <i class="fa-solid fa-calendar" style="margin-left: 0.5rem; margin-right: 0.25rem;"></i> Added in {{ job.year }}
+        </p>
+    </div>
+    
+    <div style="display: flex; gap: 0.75rem;">
+        <a href="{% url 'job_update' job.pk %}" class="btn btn-primary" id="btn_edit_job_post">
+            <i class="fa-solid fa-pen-to-square"></i> Edit Posting
+        </a>
+        <a href="{% url 'job_delete' job.pk %}" class="btn btn-danger" id="btn_delete_job_post">
+            <i class="fa-solid fa-trash-can"></i> Delete
+        </a>
+    </div>
+</div>
+
+<!-- Grid Content Area -->
+<div class="detail-layout" id="job_detail_layout">
+    <!-- Left Column: Core Job Metrics -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Scores Card -->
+        <div class="card" id="detail_scores_card">
+            <h3 style="color: var(--primary-hover); margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                <i class="fa-solid fa-gauge-high"></i> Job Metrics & Analytics
+            </h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <!-- Metric 1 -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">
+                        <span>Employee Satisfaction</span>
+                        <span style="color: var(--primary-hover);">{{ job.employee_satisfaction }}/100</span>
+                    </div>
+                    <div style="width: 100%; height: 8px; background-color: var(--border-color); border-radius: 4px; overflow: hidden;">
+                        <div style="width: {{ job.employee_satisfaction }}%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <!-- Metric 2 -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">
+                        <span>Career Growth Score</span>
+                        <span style="color: var(--accent);">{{ job.career_growth_score }}/100</span>
+                    </div>
+                    <div style="width: 100%; height: 8px; background-color: var(--border-color); border-radius: 4px; overflow: hidden;">
+                        <div style="width: {{ job.career_growth_score }}%; height: 100%; background: linear-gradient(90deg, var(--secondary), var(--accent)); border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <!-- Metric 3 -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">
+                        <span>Work-Life Balance Score</span>
+                        <span style="color: var(--success-hover);">{{ job.work_life_balance_score }}/100</span>
+                    </div>
+                    <div style="width: 100%; height: 8px; background-color: var(--border-color); border-radius: 4px; overflow: hidden;">
+                        <div style="width: {{ job.work_life_balance_score }}%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--success)); border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <!-- Metric 4 -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">
+                        <span>Skill Demand Score</span>
+                        <span style="color: var(--warning);">{{ job.skill_demand_score }}/100</span>
+                    </div>
+                    <div style="width: 100%; height: 8px; background-color: var(--border-color); border-radius: 4px; overflow: hidden;">
+                        <div style="width: {{ job.skill_demand_score }}%; height: 100%; background: linear-gradient(90deg, var(--warning), var(--accent)); border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <!-- Metric 5 -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600;">
+                        <span>Automation Risk Index</span>
+                        <span style="color: var(--danger-hover);">{{ job.automation_risk }}/100</span>
+                    </div>
+                    <div style="width: 100%; height: 8px; background-color: var(--border-color); border-radius: 4px; overflow: hidden;">
+                        <div style="width: {{ job.automation_risk }}%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--danger)); border-radius: 4px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Specifications Card -->
+        <div class="card" id="detail_specs_card">
+            <h3 style="color: var(--primary-hover); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                <i class="fa-solid fa-circle-info"></i> Position Details
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+                <div>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; display: block; text-transform: uppercase;">Work Mode</span>
+                    <strong style="font-size: 1.1rem; color: var(--text-primary);">{{ job.work_mode }}</strong>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; display: block; text-transform: uppercase;">Weekly Hours</span>
+                    <strong style="font-size: 1.1rem; color: var(--text-primary);">{{ job.weekly_hours }} hours/week</strong>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; display: block; text-transform: uppercase;">Experience Level</span>
+                    <strong style="font-size: 1.1rem; color: var(--text-primary);">{{ job.get_experience_level_display }}</strong>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; display: block; text-transform: uppercase;">Experience Required</span>
+                    <strong style="font-size: 1.1rem; color: var(--text-primary);">{{ job.experience_years }} Years</strong>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; display: block; text-transform: uppercase;">Education Requirement</span>
+                    <strong style="font-size: 1.1rem; color: var(--text-primary);">{{ job.education_required|default:"No Degree Required" }}</strong>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; display: block; text-transform: uppercase;">Available Openings</span>
+                    <strong style="font-size: 1.1rem; color: var(--text-primary);">{{ job.job_openings }} vacancy</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Salary and Company -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Compensation Card -->
+        <div class="card" id="detail_compensation_card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(30, 41, 59, 0.45)); border-color: rgba(16, 185, 129, 0.2);">
+            <h3 style="color: var(--success-hover); margin-bottom: 1rem; border-bottom: 1px solid rgba(16, 185, 129, 0.2); padding-bottom: 0.5rem;">
+                <i class="fa-solid fa-coins"></i> Compensation Package
+            </h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+                <div>
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">Base Annual Salary</span>
+                    <div style="font-size: 2rem; font-weight: 800; color: #fff;">
+                        ${{ job.salary_usd|floatformat:0 }} <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 400;">USD</span>
+                    </div>
+                </div>
+
+                {% if job.bonus_usd > 0 %}
+                    <div>
+                        <span style="color: var(--text-secondary); font-size: 0.85rem;">Estimated Annual Bonus</span>
+                        <div style="font-size: 1.3rem; font-weight: 700; color: var(--text-primary);">
+                            +${{ job.bonus_usd|floatformat:0 }} <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">USD</span>
+                        </div>
+                    </div>
+                    <div style="border-top: 1px dashed rgba(255,255,255,0.1); margin-top: 0.5rem; padding-top: 0.75rem;">
+                        <span style="color: var(--text-secondary); font-size: 0.85rem;">Total Estimated Compensation</span>
+                        <div style="font-size: 1.7rem; font-weight: 800; color: var(--success-hover);">
+                            ${{ job.total_compensation|floatformat:0 }} <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">USD</span>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Company Card -->
+        <div class="card" id="detail_company_card">
+            <h3 style="color: var(--accent); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                <i class="fa-solid fa-building"></i> Company Overview
+            </h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; font-size: 0.95rem;">
+                <div>
+                    <span style="color: var(--text-muted); display: block; font-size: 0.8rem; text-transform: uppercase;">Company Size</span>
+                    <strong style="color: var(--text-primary);">{{ job.company_size }}</strong>
+                </div>
+
+                <div>
+                    <span style="color: var(--text-muted); display: block; font-size: 0.8rem; text-transform: uppercase;">Company Rating</span>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
+                        <strong style="color: var(--text-primary); font-size: 1.2rem;">{{ job.company_rating|floatformat:2 }}</strong>
+                        <div style="color: var(--warning); display: inline-flex; gap: 2px;">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
