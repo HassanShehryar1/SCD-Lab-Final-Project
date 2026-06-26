@@ -100,13 +100,6 @@ This project uses the **Kaggle Global AI Jobs** dataset for market analysis and 
 
 ---
 
-## Contributors
-
-- [HassanShehryar1](https://github.com/HassanShehryar1)
-- [SameerHassanGoraya](https://github.com/SameerHassanGoraya)
-
----
-
 ## License
 
 This project was developed for academic purposes as part of the SCD Laboratory course.
