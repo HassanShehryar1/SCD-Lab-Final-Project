@@ -2,7 +2,6 @@
 
 A Django-based web application that provides real-time insights into the global AI and tech job market — including salary trends, market growth, and job satisfaction scores. Built as the final project for the Software Construction and Development (SCD) laboratory course.
 
-**Live Demo:** [scd-lab-final-project.vercel.app](https://scd-lab-final-project.vercel.app)
 
 ---
 
